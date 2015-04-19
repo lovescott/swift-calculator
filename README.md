@@ -8,13 +8,10 @@ Apps with Swift](https://itunes.apple.com/us/course/developing-ios-8-apps-swift/
 
 *  `master`: is the latest code merged from demo or assignment
 *  `assignmentx`: follows development from numbered programming assignments
----
 
 ## Challenge 
 
 This repository is open, however I challenge you to do the work yourself. I welcome any questions you may have, so feel free to reach out to me if you are stuck.
-
----
 
 ## History
 
