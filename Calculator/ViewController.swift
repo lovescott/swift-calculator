@@ -13,6 +13,8 @@ class ViewController: UIViewController
     
     @IBOutlet weak var display: UILabel!
     
+    @IBOutlet weak var history: UILabel!
+    
     var userIsInTheMiddleOfTypingANumber = false
     
     
@@ -42,22 +44,49 @@ class ViewController: UIViewController
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
         operandStack.append(displayValue)
+        trackHistory(display.text!)
         println("operandStack = \(operandStack)")
     }
     
     @IBAction func operate(sender: UIButton) {
         let operation = sender.currentTitle!
+        trackHistory(operation)
+        
         if userIsInTheMiddleOfTypingANumber {
             enter()
         }
         switch operation {
-        case "✖️": performOperation{$0 * $1}
-        case "➗": performOperation{$1 / $0}
-        case "➕": performOperation{$0 + $1}
-        case "➖": performOperation{$1 - $0}
-        case "√": performOperation{ sqrt($0) }
+        case "×": performOperation { $0 * $1 }
+        case "÷": performOperation { $1 / $0 }
+        case "+": performOperation { $0 + $1 }
+        case "−": performOperation { $1 - $0 }
+        case "√": performOperation { sqrt($0) }
+        case "sin": performOperation { sin($0 * M_PI / 180) }
+        case "cos": performOperation { cos($0 * M_PI / 180) }
+        case "π": performOperation (M_PI)
         default: break
         }
+    }
+    
+    @IBAction func decimalPressed() {
+        let decimalLocation = display.text!.rangeOfString(".")
+        
+        if userIsInTheMiddleOfTypingANumber{
+            display.text = decimalLocation == nil ? display.text! + "." : display.text!
+        }
+        else{
+            display.text = "0" + "."
+            userIsInTheMiddleOfTypingANumber = true
+        }
+
+    }
+    
+    @IBAction func clear() {
+        userIsInTheMiddleOfTypingANumber = false
+        operandStack.removeAll(keepCapacity: false)
+        display.text = "0"
+        history.text = " "
+        
     }
     
     private func performOperation (operation: (Double, Double) -> Double){
@@ -71,6 +100,13 @@ class ViewController: UIViewController
             displayValue = operation(operandStack.removeLast())
             enter()
         }
+    }
+    private func performOperation (specialOperation: Double){
+        displayValue = specialOperation
+        enter()
+    }
+    func trackHistory(historyItem: String){
+        history.text = history.text! + " " + historyItem
     }
 }
 
