@@ -7,7 +7,7 @@ Apps with Swift](https://itunes.apple.com/us/course/developing-ios-8-apps-swift/
 ## Branches
 
 *  `master`: is the latest code merged from demo or assignment
-*  'LectureX': follows code from the Lecture
+*  `LectureX`: follows code from the Lecture
 *  `Assignmentx`: follows development from numbered programming assignments
 
 ## Challenge 
@@ -20,4 +20,4 @@ This repository is open, however I challenge you to do the work yourself. I welc
 * `Lecture2` Demo completed
 * `AssignmentI` There is a notable commit with auto-layout working
 * `AssignmentI` meets all requirements 
-* 'Lecture3' Demo completed
+* `Lecture3` Demo completed
