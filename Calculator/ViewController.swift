@@ -17,6 +17,8 @@ class ViewController: UIViewController
     
     var userIsInTheMiddleOfTypingANumber = false
     
+    var brain = CalculatorBrain()
+    
     
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
@@ -43,29 +45,40 @@ class ViewController: UIViewController
     
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
-        operandStack.append(displayValue)
-        trackHistory(display.text!)
-        println("operandStack = \(operandStack)")
+        if let result = brain.pushOperand(displayValue){
+            displayValue = result
+        }else{
+            displayValue = 0
+        }
+        //trackHistory(display.text!)
+        //println("operandStack = \(operandStack)")
     }
     
     @IBAction func operate(sender: UIButton) {
         let operation = sender.currentTitle!
-        trackHistory(operation)
+//        trackHistory(operation)
         
         if userIsInTheMiddleOfTypingANumber {
             enter()
         }
-        switch operation {
-        case "×": performOperation { $0 * $1 }
-        case "÷": performOperation { $1 / $0 }
-        case "+": performOperation { $0 + $1 }
-        case "−": performOperation { $1 - $0 }
-        case "√": performOperation { sqrt($0) }
-        case "sin": performOperation { sin($0 * M_PI / 180) }
-        case "cos": performOperation { cos($0 * M_PI / 180) }
-        case "π": performOperation (M_PI)
-        default: break
+        if let operation = sender.currentTitle {
+            if let result = brain.performOperation(operation) {
+                displayValue = result
+            }else{
+                displayValue = 0
+            }
         }
+//        switch operation {
+//        case "×": performOperation { $0 * $1 }
+//        case "÷": performOperation { $1 / $0 }
+//        case "+": performOperation { $0 + $1 }
+//        case "−": performOperation { $1 - $0 }
+//        case "√": performOperation { sqrt($0) }
+//        case "sin": performOperation { sin($0 * M_PI / 180) }
+//        case "cos": performOperation { cos($0 * M_PI / 180) }
+//        case "π": performOperation (M_PI)
+//        default: break
+//        }
     }
     
     @IBAction func decimalPressed() {
