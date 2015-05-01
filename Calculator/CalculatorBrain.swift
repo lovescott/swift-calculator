@@ -2,7 +2,6 @@
 //  CalculatorBrain.swift
 //  Calculator
 //
-//  Created by Scott Love on 4/19/15.
 //  Copyright (c) 2015 Scott Love. All rights reserved.
 //
 
