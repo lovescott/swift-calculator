@@ -10,15 +10,13 @@ import UIKit
 
 class ViewController: UIViewController
 {
+    var userIsInTheMiddleOfTypingANumber = false
+    var operandStack = Array<Double>()
+    var brain = CalculatorBrain()
     
     @IBOutlet weak var display: UILabel!
     
     @IBOutlet weak var history: UILabel!
-    
-    var userIsInTheMiddleOfTypingANumber = false
-    
-    var brain = CalculatorBrain()
-    
     
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
@@ -32,53 +30,30 @@ class ViewController: UIViewController
         }
     }
     
-    var operandStack = Array<Double>()
-    var displayValue: Double {
-        get{
-           return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
-        }
-        set{
-            display.text = "\(newValue)"
-            userIsInTheMiddleOfTypingANumber = false
-        }
-    }
-    
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
         if let result = brain.pushOperand(displayValue){
             displayValue = result
+            trackHistory()
         }else{
             displayValue = 0
+            history.text = " "
         }
-        //trackHistory(display.text!)
-        //println("operandStack = \(operandStack)")
     }
     
     @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
-//        trackHistory(operation)
-        
         if userIsInTheMiddleOfTypingANumber {
             enter()
         }
         if let operation = sender.currentTitle {
-            if let result = brain.performOperation(operation) {
+            if let result = brain.performOperation(operation){
                 displayValue = result
+                trackHistory()
             }else{
                 displayValue = 0
+                history.text = " "
             }
         }
-//        switch operation {
-//        case "×": performOperation { $0 * $1 }
-//        case "÷": performOperation { $1 / $0 }
-//        case "+": performOperation { $0 + $1 }
-//        case "−": performOperation { $1 - $0 }
-//        case "√": performOperation { sqrt($0) }
-//        case "sin": performOperation { sin($0 * M_PI / 180) }
-//        case "cos": performOperation { cos($0 * M_PI / 180) }
-//        case "π": performOperation (M_PI)
-//        default: break
-//        }
     }
     
     @IBAction func decimalPressed() {
@@ -96,30 +71,24 @@ class ViewController: UIViewController
     
     @IBAction func clear() {
         userIsInTheMiddleOfTypingANumber = false
+        brain.clearStack()
         operandStack.removeAll(keepCapacity: false)
         display.text = "0"
         history.text = " "
         
     }
+    var displayValue: Double {
+        get{
+            return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+        }
+        set{
+            display.text = "\(newValue)"
+            userIsInTheMiddleOfTypingANumber = false
+        }
+    }
     
-    private func performOperation (operation: (Double, Double) -> Double){
-        if operandStack.count >= 2 {
-            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
-            enter()
-        }
-    }
-    private func performOperation (operation: Double -> Double){
-        if operandStack.count >= 1 {
-            displayValue = operation(operandStack.removeLast())
-            enter()
-        }
-    }
-    private func performOperation (specialOperation: Double){
-        displayValue = specialOperation
-        enter()
-    }
-    func trackHistory(historyItem: String){
-        history.text = history.text! + " " + historyItem
+    func trackHistory(){
+        history.text = brain.descriptionOfStack()
     }
 }
 

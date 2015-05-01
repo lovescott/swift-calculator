@@ -13,6 +13,7 @@ class CalculatorBrain{
         case Operand(Double)
         case UnaryOperation(String, Double -> Double)
         case BinaryOperation(String, (Double, Double) -> Double)
+        case SpecialOperation(String, () -> Double)
         
         var description: String {
             get{
@@ -22,6 +23,8 @@ class CalculatorBrain{
                 case .UnaryOperation(let symbol, _):
                     return symbol
                 case .BinaryOperation(let symbol, _):
+                    return symbol
+                case .SpecialOperation(let symbol, _):
                     return symbol
                 }
             }
@@ -36,12 +39,14 @@ class CalculatorBrain{
             knownOps[op.description] = op
         }
         learnOp(Op.BinaryOperation("×", *))
-        knownOps["×"] = Op.BinaryOperation("×", *)
-        knownOps["×"] = Op.BinaryOperation("×", *)
-        knownOps["+"] = Op.BinaryOperation("+", +)
-        knownOps["−"] = Op.BinaryOperation("−") { $1 - $0 }
-        knownOps["÷"] = Op.BinaryOperation("÷"){ $1 / $0 }
-        knownOps["÷"] = Op.UnaryOperation("√", sqrt)
+        learnOp(Op.BinaryOperation("+", +))
+        learnOp(Op.BinaryOperation("−"){ $1 - $0 })
+        learnOp(Op.BinaryOperation("÷"){ $1 / $0 })
+        learnOp(Op.UnaryOperation("√", sqrt))
+        learnOp(Op.SpecialOperation("π"){M_PI})
+        learnOp(Op.UnaryOperation("sin"){ sin($0 * M_PI / 180) })
+        learnOp(Op.UnaryOperation("cos"){ cos($0 * M_PI / 180) })
+        println("\(knownOps)")
     }
     
     private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op]){
@@ -65,6 +70,8 @@ class CalculatorBrain{
                         return (operation(operand1, operand2), op2Evaluation.remainingOps)
                     }
                 }
+            case .SpecialOperation(_, let operation):
+                return (operation(), remainingOps);
             }
         }
        
@@ -88,5 +95,11 @@ class CalculatorBrain{
         }
         return evaluate()
         
+    }
+    func clearStack(){
+        opStack.removeAll(keepCapacity: false)
+    }
+    func descriptionOfStack () -> String{
+        return "\(opStack)"
     }
 }
