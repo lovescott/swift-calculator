@@ -10,6 +10,7 @@ import Foundation
 class CalculatorBrain{
     private enum Op: Printable{
         case Operand(Double)
+        case Variable(String)
         case UnaryOperation(String, Double -> Double)
         case BinaryOperation(String, (Double, Double) -> Double)
         case SpecialOperation(String, () -> Double)
@@ -19,6 +20,8 @@ class CalculatorBrain{
                 switch self{
                 case .Operand(let operend):
                     return "\(operend)"
+                case .Variable(let variable):
+                    return "\(variable)"
                 case .UnaryOperation(let symbol, _):
                     return symbol
                 case .BinaryOperation(let symbol, _):
@@ -32,6 +35,7 @@ class CalculatorBrain{
     
     private var opStack = [Op]()
     private var knownOps = [String:Op]()
+    var variableValues = ["x": 35.0, "a": 10.0]
     
     init(){
         func learnOp(op: Op){
@@ -45,7 +49,6 @@ class CalculatorBrain{
         learnOp(Op.SpecialOperation("π"){M_PI})
         learnOp(Op.UnaryOperation("sin"){ sin($0 * M_PI / 180) })
         learnOp(Op.UnaryOperation("cos"){ cos($0 * M_PI / 180) })
-        println("\(knownOps)")
     }
     
     private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op]){
@@ -56,6 +59,8 @@ class CalculatorBrain{
             switch op{
             case .Operand(let operand):
                 return(operand, remainingOps)
+            case .Variable(let variable):
+                return (variableValues[variable], remainingOps)
             case .UnaryOperation(_, let operation):
                 let operandEvaluation = evaluate(remainingOps)
                 if let operand = operandEvaluation.result{
@@ -85,6 +90,11 @@ class CalculatorBrain{
     
     func pushOperand(operand: Double) -> Double? {
         opStack.append(Op.Operand(operand))
+        return evaluate()
+    }
+    
+    func pushOperand(symbol: String) -> Double?{
+        opStack.append(Op.Variable(symbol))
         return evaluate()
     }
     

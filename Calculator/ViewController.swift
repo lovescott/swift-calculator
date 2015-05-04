@@ -28,10 +28,9 @@ class ViewController: UIViewController
             userIsInTheMiddleOfTypingANumber = true
         }
     }
-    
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
-        if let result = brain.pushOperand(displayValue){
+        if let result = brain.pushOperand(displayValue!){
             displayValue = result
             trackHistory()
         }else{
@@ -76,12 +75,12 @@ class ViewController: UIViewController
         history.text = " "
         
     }
-    var displayValue: Double {
+    var displayValue: Double? {
         get{
-            return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+            return NSNumberFormatter().numberFromString(display.text!)?.doubleValue
         }
         set{
-            display.text = "\(newValue)"
+            display.text = (newValue == nil) ? "0" : "\(newValue!)"
             userIsInTheMiddleOfTypingANumber = false
         }
     }
